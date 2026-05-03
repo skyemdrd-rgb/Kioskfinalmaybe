@@ -22,7 +22,7 @@ html,body{
 }
 
 #app{
-  position:absolute;
+  position:fixed;
   width:3840px;
   height:2160px;
   transform-origin:top left;
@@ -693,6 +693,8 @@ window.addEventListener('load', ()=>{
   renderDestinations();
 
   loader.style.display = 'none';
+
+  document.addEventListener('DOMContentLoaded', ()=>{
 
 });
 
