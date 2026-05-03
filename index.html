@@ -350,9 +350,16 @@ body.debug .hotspot{
 
 <div id="startScreen" class="screen active">
 
-    <video class="video-bg" autoplay muted loop playsinline preload="auto">
-        <source src="idle.mp4" type="video/mp4">
-    </video>
+    <video 
+    class="video-bg"
+    autoplay
+    muted
+    loop
+    playsinline
+    preload="metadata"
+>
+    <source src="./idle.mp4" type="video/mp4">
+</video>
 
     <div class="hotspot startHotspot" onclick="goHome()"></div>
 
