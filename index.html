@@ -1,0 +1,858 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MSC Kiosk Directory</title>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #edf1f5;
+}
+
+#app {
+  position: absolute;
+  width: 3840px;
+  height: 2160px;
+  top: 0;
+  left: 0;
+  transform-origin: top left;
+  overflow: hidden;
+}
+
+#loader {
+  position: fixed;
+  inset: 0;
+  background: black;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 99999;
+  font-size: 50px;
+}
+
+.screen {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s ease;
+}
+
+.screen.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.background,
+.video-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.background {
+  background-size: cover;
+  background-position: center;
+}
+
+.video-bg {
+  object-fit: cover;
+}
+
+.hotspot {
+  position: absolute;
+  z-index: 10;
+  cursor: pointer;
+}
+
+body.debug .hotspot {
+  background: rgba(255,0,0,.15);
+  border: 2px dashed red;
+}
+
+.startHotspot{ width:100%; height:100%; top:0; left:0; }
+.home{ left:0%; width:21.67%; height:23.67%; bottom:0; }
+.guide{ left:22.3%; width:25.32%; height:23.67%; bottom:0; }
+.about{ left:48.2%; width:24.32%; height:23.67%; bottom:0; }
+.clinic{ top:4%; left:6%; width:31%; height:22%; }
+.chaplain{ top:4%; left:42%; width:30%; height:22%; }
+.resto{ top:32%; left:40.5%; width:32%; height:18%; }
+.dept{ top:54.7%; left:6%; width:31.5%; height:21.2%; }
+.mapBtn{ bottom:3%; left:5%; width:78%; height:18%; }
+.aboutSide{ top:6%; right:0%; width:11.5%; height:28.33%; }
+.guideSide{ top:36%; right:0%; width:11.5%; height:28.33%; }
+.homeSide{ top:65.66%; right:0%; width:11.5%; height:28.33%; }
+.backHome{ bottom:7%; right:0%; width:10.5%; height:16%; }
+.page1Btn,.page2Btn,.page3Btn,.page4Btn{ position:absolute; right:0%; width:7%; height:10%; }
+.page1Btn{ top:27%; }
+.page2Btn{ top:39.5%; }
+.page3Btn{ top:51.5%; }
+.page4Btn{ top:64%; }
+
+.container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  background: #edf1f5;
+}
+
+.sidebar {
+  width: 340px;
+  background: white;
+  border-right: 2px solid #dbe2ea;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 0 20px rgba(0,0,0,0.08);
+  z-index: 5;
+}
+
+.header {
+  background: #0d3b8f;
+  color: white;
+  padding: 35px;
+}
+
+.header h1 {
+  font-size: 38px;
+  line-height: 1.1;
+  margin-bottom: 10px;
+}
+
+.header p {
+  color: #d7e5ff;
+  font-size: 18px;
+}
+
+.sidebar-content {
+  padding: 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.search-box {
+  width: 100%;
+  padding: 16px;
+  border-radius: 18px;
+  border: 2px solid #dbe2ea;
+  margin-bottom: 20px;
+  font-size: 17px;
+}
+
+.keyboard {
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 30px;
+  width: 100%;
+  max-width: 100%;
+}
+
+.keyboard-row {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.keyboard button {
+  flex: 1;
+  padding: 18px 12px;
+  border: none;
+  border-radius: 20px;
+  background: #0d3b8f;
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  min-height: 64px;
+}
+
+.keyboard button:active {
+  transform: scale(0.96);
+}
+
+.space-key {
+  flex: 4 !important;
+}
+
+.wide-key {
+  flex: 2 !important;
+}
+
+.destination {
+  background: white;
+  border: 2px solid #dbe2ea;
+  padding: 16px;
+  border-radius: 18px;
+  margin-bottom: 14px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 17px;
+  transition: 0.2s ease;
+}
+
+.destination:hover {
+  background: #0d3b8f;
+  color: white;
+  transform: translateX(5px);
+}
+
+.map-area {
+  flex: 1;
+  position: relative;
+  padding: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.top-bar {
+  position: absolute;
+  top: 34px;
+  right: 34px;
+  background: rgba(255,255,255,0.96);
+  padding: 18px 26px;
+  border-radius: 24px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  z-index: 20;
+  color: #0d3b8f;
+  font-weight: 700;
+  font-size: 22px;
+}
+
+.switch-btn {
+  border: none;
+  background: #0d3b8f;
+  color: white;
+  padding: 16px 24px;
+  border-radius: 18px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.map-container {
+  width: 100%;
+  height: 100%;
+  background: white;
+  border-radius: 38px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  padding: 18px;
+}
+
+.map-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.floor-sidebar {
+  position: absolute;
+  right: 38px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  z-index: 30;
+}
+
+.floor-btn {
+  width: 90px;
+  height: 90px;
+  border: none;
+  border-radius: 24px;
+  background: rgba(255,255,255,0.96);
+  color: #0d3b8f;
+  font-size: 24px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.12);
+}
+
+.marker {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  background: red;
+  border-radius: 50%;
+  border: 5px solid white;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 0 12px rgba(255,0,0,0.25);
+  animation: pulse 2s infinite;
+  display: none;
+}
+
+@keyframes pulse {
+  0% { transform: translate(-50%, -50%) scale(1); }
+  50% { transform: translate(-50%, -50%) scale(1.2); }
+  100% { transform: translate(-50%, -50%) scale(1); }
+}
+</style>
+</head>
+
+<body class="debug">
+
+<div id="loader">Loading...</div>
+
+<div id="app">
+
+<div id="startScreen" class="screen active">
+  <video class="video-bg" autoplay muted loop playsinline>
+    <source src="idle.mp4" type="video/mp4">
+  </video>
+  <div class="hotspot startHotspot" onclick="goHome()"></div>
+</div>
+
+<div id="homeScreen" class="screen">
+  <div class="background" style="background-image:url('home.jpg')"></div>
+  <div class="hotspot home" onclick="goHome()"></div>
+  <div class="hotspot guide" onclick="goGuide()"></div>
+  <div class="hotspot about" onclick="showScreen('aboutScreen')"></div>
+</div>
+
+<div id="aboutScreen" class="screen">
+  <div class="background" style="background-image:url('about.jpg')"></div>
+  <div class="hotspot backHome" onclick="goHome()"></div>
+</div>
+
+<div id="guideScreen" class="screen">
+  <div class="background" style="background-image:url('guide.jpg')"></div>
+
+  <div class="hotspot clinic" onclick="showScreen('hmo1')"></div>
+  <div class="hotspot chaplain" onclick="showScreen('chaplainScreen')"></div>
+  <div class="hotspot resto" onclick="showScreen('restaurantScreen')"></div>
+  <div class="hotspot dept" onclick="showScreen('departmentScreen')"></div>
+  <div class="hotspot mapBtn" onclick="showScreen('mapScreen')"></div>
+
+  <div class="hotspot aboutSide" onclick="showScreen('aboutScreen')"></div>
+  <div class="hotspot guideSide" onclick="goGuide()"></div>
+  <div class="hotspot homeSide" onclick="goHome()"></div>
+</div>
+
+<div id="restaurantScreen" class="screen">
+  <div class="background" style="background-image:url('restaurant.jpg')"></div>
+  <div class="hotspot backHome" onclick="goGuide()"></div>
+</div>
+
+<div id="departmentScreen" class="screen">
+  <div class="hotspot backHome" onclick="goGuide()"></div>
+  <div class="background" style="background-image:url('department.jpg')"></div>
+  <div class="hotspot cancer" onclick="showScreen('cancerVideo')"></div>
+  <div class="hotspot hemo" onclick="showScreen('hemoVideo')"></div>
+  <div class="hotspot rehab" onclick="showScreen('rehabVideo')"></div>
+  <div class="hotspot backDept" onclick="goGuide()"></div>
+</div>
+
+<div id="cancerVideo" class="screen">
+  <video class="video-bg" autoplay muted loop>
+    <source src="cancer.mp4" type="video/mp4">
+  </video>
+  <div class="hotspot backDept" onclick="showScreen('departmentScreen')"></div>
+</div>
+
+<div id="hemoVideo" class="screen">
+  <video class="video-bg" autoplay muted loop>
+    <source src="hemodialysis.mp4" type="video/mp4">
+  </video>
+  <div class="hotspot backDept" onclick="showScreen('departmentScreen')"></div>
+</div>
+
+<div id="rehabVideo" class="screen">
+  <video class="video-bg" autoplay muted loop>
+    <source src="rehab.mp4" type="video/mp4">
+  </video>
+  <div class="hotspot backDept" onclick="showScreen('departmentScreen')"></div>
+</div>
+
+<div id="chaplainScreen" class="screen">
+  <div class="background" style="background-image:url('chaplain1.jpg')"></div>
+  <div class="hotspot backHome" onclick="goGuide()"></div>
+</div>
+
+<div id="hmo1" class="screen">
+  <div class="background" style="background-image:url('hmo/hmo1.jpg')"></div>
+
+  <div class="hotspot amaphil"></div>
+  <div class="hotspot benlife"></div>
+  <div class="hotspot philcareBtn"></div>
+  <div class="hotspot asianlife"></div>
+  <div class="hotspot generaliBtn"></div>
+  <div class="hotspot hppiBtn"></div>
+  <div class="hotspot inlifeBtn"></div>
+
+  <div class="hotspot page2Btn" onclick="showScreen('hmo2')"></div>
+  <div class="hotspot backHome" onclick="goGuide()"></div>
+</div>
+
+<div id="hmo2" class="screen">
+  <div class="background" style="background-image:url('hmo/hmo2.jpg')"></div>
+
+  <div class="hotspot kaiserBtn"></div>
+  <div class="hotspot pacificBtn"></div>
+  <div class="hotspot valuecareBtn"></div>
+  <div class="hotspot intellicareBtn"></div>
+
+  <div class="hotspot page1Btn" onclick="showScreen('hmo1')"></div>
+  <div class="hotspot backHome" onclick="goGuide()"></div>
+</div>
+
+<div id="mapScreen" class="screen">
+
+  <div class="container">
+
+    <aside class="sidebar">
+      <div class="header">
+        <h1>Hospital<br>Directory</h1>
+        <p>Interactive Kiosk Navigation</p>
+      </div>
+
+      <div class="sidebar-content">
+        <input type="text" id="searchBox" class="search-box" placeholder="Search destination..." readonly onclick="toggleKeyboard(true)">
+
+        <div id="keyboard" class="keyboard">
+          <div class="keyboard-row">
+            <button onclick="pressKey('Q')">Q</button>
+            <button onclick="pressKey('W')">W</button>
+            <button onclick="pressKey('E')">E</button>
+            <button onclick="pressKey('R')">R</button>
+            <button onclick="pressKey('T')">T</button>
+            <button onclick="pressKey('Y')">Y</button>
+            <button onclick="pressKey('U')">U</button>
+            <button onclick="pressKey('I')">I</button>
+            <button onclick="pressKey('O')">O</button>
+            <button onclick="pressKey('P')">P</button>
+          </div>
+
+          <div class="keyboard-row">
+            <button onclick="pressKey('A')">A</button>
+            <button onclick="pressKey('S')">S</button>
+            <button onclick="pressKey('D')">D</button>
+            <button onclick="pressKey('F')">F</button>
+            <button onclick="pressKey('G')">G</button>
+            <button onclick="pressKey('H')">H</button>
+            <button onclick="pressKey('J')">J</button>
+            <button onclick="pressKey('K')">K</button>
+            <button onclick="pressKey('L')">L</button>
+          </div>
+
+          <div class="keyboard-row">
+            <button onclick="pressKey('Z')">Z</button>
+            <button onclick="pressKey('X')">X</button>
+            <button onclick="pressKey('C')">C</button>
+            <button onclick="pressKey('V')">V</button>
+            <button onclick="pressKey('B')">B</button>
+            <button onclick="pressKey('N')">N</button>
+            <button onclick="pressKey('M')">M</button>
+            <button class="wide-key" onclick="backspaceKey()">⌫</button>
+          </div>
+
+          <div class="keyboard-row">
+            <button class="space-key" onclick="pressKey(' ')">SPACE</button>
+            <button class="wide-key" onclick="searchDestination()">SEARCH</button>
+            <button class="wide-key" onclick="toggleKeyboard(false)">CLOSE</button>
+          </div>
+        </div>
+
+        <div id="destinations">
+          <div class="destination" onclick="showWaypoint(31,33)">Dietary</div>
+          <div class="destination" onclick="showWaypoint(41,8)">Purchasing Office</div>
+          <div class="destination" onclick="showWaypoint(16,76)">ER</div>
+          <div class="destination" onclick="showWaypoint(25,90)">OPD</div>
+          <div class="destination" onclick="showWaypoint(40,72)">Chapel</div>
+          <div class="destination" onclick="showWaypoint(43,51)">Laboratory</div>
+          <div class="destination" onclick="showWaypoint(48,26)">Cashier</div>
+          <div class="destination" onclick="showWaypoint(52,38)">Admission</div>
+          <div class="destination" onclick="showWaypoint(44,58)">Radiology</div>
+          <div class="destination" onclick="showWaypoint(41,95)">Waiting Area</div>
+          <div class="destination" onclick="showWaypoint(49,78)">Pharmacy</div>
+          <div class="destination" onclick="showWaypoint(49,78)">Pharmacy</div>
+          <div class="destination" onclick="showWaypoint(77,85)">Dorms</div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="map-area">
+
+      <div class="top-bar">
+        <button class="switch-btn" onclick="goGuide()">Back</button>
+        Touch a destination
+        <button class="switch-btn" onclick="switchMap()">Switch Building</button>
+      </div>
+
+      <div class="map-container">
+        <img id="mapImage" src="old-building-map.png" alt="Hospital Map">
+
+        <div id="marker" class="marker"></div>
+        
+  <div style="position:absolute; left:41%; top:8%; width:18px; height:18px; background:transparent; border:none; border-radius:50%; transform:translate(-50%,-50%);"></div>
+  <div style="position:absolute; left:16%; top:76%; width:18px; height:18px; background:transparent; border:none; border-radius:50%; transform:translate(-50%,-50%);"></div>
+  <div style="position:absolute; left:25%; top:90%; width:18px; height:18px; background:transparent; border:none; border-radius:50%; transform:translate(-50%,-50%);"></div>
+  <div style="position:absolute; left:40%; top:72%; width:18px; height:18px; background:transparent; border:none; border-radius:50%; transform:translate(-50%,-50%);"></div>
+  <div style="position:absolute; left:43%; top:51%; width:18px; height:18px; background:transparent; border:none; border-radius:50%; transform:translate(-50%,-50%);"></div>
+  <div style="position:absolute; left:49%; top:78%; width:18px; height:18px; background:transparent; border:none; border-radius:50%; transform:translate(-50%,-50%);"></div>
+  <div style="position:absolute; left:62%; top:19%; width:18px; height:18px; background:transparent; border:none; border-radius:50%; transform:translate(-50%,-50%);"></div>
+  <div style="position:absolute; left:71%; top:19%; width:18px; height:18px; background:transparent; border:none; border-radius:50%; transform:translate(-50%,-50%);"></div>
+  <div style="position:absolute; left:77%; top:58%; width:18px; height:18px; background:transparent; border:none; border-radius:50%; transform:translate(-50%,-50%);"></div>
+</div>
+      </div>
+
+      <div class="floor-sidebar">
+        <button class="floor-btn" onclick="changeFloor(1)">1F</button>
+        <button class="floor-btn" onclick="changeFloor(2)">2F</button>
+        <button class="floor-btn" onclick="changeFloor(3)">3F</button>
+        <button class="floor-btn" id="floor4" onclick="changeFloor(4)">4F</button>
+      </div>
+
+    </main>
+
+  </div>
+
+</div>
+
+</div>
+
+<script>
+window.onerror = function(message, source, line, col, error){
+  console.log('JS ERROR:', message);
+};
+
+window.addEventListener('load', () => {
+
+  const app = document.getElementById('app');
+  const loader = document.getElementById('loader');
+  const screens = document.querySelectorAll('.screen');
+
+  /* =========================
+     RESPONSIVE SCALE
+  ========================= */
+
+  function scaleApp(){
+
+    if(!app) return;
+
+    const baseWidth = 3840;
+    const baseHeight = 2160;
+
+    const scaleX = window.innerWidth / baseWidth;
+    const scaleY = window.innerHeight / baseHeight;
+
+    const scale = Math.min(scaleX, scaleY);
+
+    app.style.transform = `scale(${scale})`;
+
+    const left = (window.innerWidth - (baseWidth * scale)) / 2;
+    const top = (window.innerHeight - (baseHeight * scale)) / 2;
+
+    app.style.left = left + 'px';
+    app.style.top = top + 'px';
+  }
+
+  scaleApp();
+  window.addEventListener('resize', scaleApp);
+
+  /* =========================
+     SCREEN NAVIGATION
+  ========================= */
+
+  window.showScreen = function(id){
+
+    screens.forEach(screen => {
+      screen.classList.remove('active');
+    });
+
+    const target = document.getElementById(id);
+
+    if(target){
+      target.classList.add('active');
+    }
+  };
+
+  window.goHome = function(){
+    showScreen('homeScreen');
+  };
+
+  window.goGuide = function(){
+    showScreen('guideScreen');
+  };
+
+  /* =========================
+     MAP SYSTEM
+  ========================= */
+
+  const marker = document.getElementById('marker');
+  const mapImage = document.getElementById('mapImage');
+  const destinations = document.getElementById('destinations');
+
+  let currentMap = 'old';
+  let currentFloor = 1;
+
+  const floors = {
+
+    old: {
+
+      1: {
+        image: 'old-building-map.png',
+        destinations: [
+          ['Dietary',34,31],
+          ['Purchasing Office',39,10],
+          ['ER',22,75],
+          ['OPD',32,80],
+          ['Chapel',42,69],
+          ['Laboratory',45,49],
+          ['Drug Testing Lab',39,48],
+          ['Medical Social Service',28.5,60],
+          ['Medical Imaging',33,58],
+          ['Pharmacy',53,76],
+          ['Admin Office',37,86],
+          ['Business Office',50,84],
+          ['MIS',61,18],
+          ['HR Office',61,38],
+          ['Training Room',70,18],
+          ['Doctors Quarter',76,56],
+          ['Medical Record',64,66],
+          ['Photocopy',72,66],
+          ['Dorms',78,80],
+          ['MSC Entrance',74,6],
+          ['Kraft & Kettle',67,87]
+        ]
+      },
+
+      2: {
+        image: 'old-building-2nd-floor.png',
+        destinations: [
+          ['PICU',30,38],
+          ['ICU',63,30],
+          ['OR',82,15]
+        ]
+      },
+
+      3: {
+        image: 'old-building-3rd-floor.png',
+        destinations: [
+          ['Conference Room',30,45],
+          ['Training Room',55,52]
+        ]
+      }
+    },
+
+    new: {
+
+      1: {
+        image: 'msc-map.png',
+        destinations: [
+          ['Canteen',28,20],
+          ['Eye Surgi Center',42,22],
+          ['ACES',57,22]
+        ]
+      },
+
+      2: {
+        image: 'msc-2nd-floor.png',
+        destinations: [
+          ['DR Clinics',15,42],
+          ['Elevator',64,45]
+        ]
+      },
+
+      3: {
+        image: 'msc-3rd-floor.png',
+        destinations: [
+          ['Executive Office',25,45],
+          ['Board Room',60,55]
+        ]
+      },
+
+      4: {
+        image: 'msc-4th-floor.png',
+        destinations: [
+          ['Roof Deck',20,45],
+          ['Executive Lounge',45,58]
+        ]
+      }
+    }
+  };
+
+  function renderDestinations(){
+
+    const data = floors[currentMap][currentFloor];
+
+    if(!data) return;
+
+    mapImage.src = data.image;
+
+    destinations.innerHTML = '';
+
+    data.destinations.forEach(item => {
+
+      const button = document.createElement('div');
+
+      button.className = 'destination';
+      button.innerText = item[0];
+
+      button.onclick = () => {
+        showWaypoint(item[1], item[2]);
+      };
+
+      destinations.appendChild(button);
+    });
+  }
+
+  window.showWaypoint = function(x, y){
+
+    if(!marker) return;
+
+    marker.style.display = 'block';
+    marker.style.left = x + '%';
+    marker.style.top = y + '%';
+  };
+
+  window.changeFloor = function(floor){
+
+    currentFloor = floor;
+
+    if(currentMap === 'old' && floor === 4){
+      currentFloor = 1;
+    }
+
+    marker.style.display = 'none';
+
+    renderDestinations();
+  };
+
+  window.switchMap = function(){
+
+    currentMap = currentMap === 'old' ? 'new' : 'old';
+
+    if(currentMap === 'old' && currentFloor === 4){
+      currentFloor = 1;
+    }
+
+    marker.style.display = 'none';
+
+    renderDestinations();
+  };
+
+  /* =========================
+     TOUCH KEYBOARD
+  ========================= */
+
+  window.toggleKeyboard = function(show){
+
+    const keyboard = document.getElementById('keyboard');
+
+    if(!keyboard) return;
+
+    keyboard.style.display = show ? 'flex' : 'none';
+  };
+
+  window.pressKey = function(key){
+
+    const box = document.getElementById('searchBox');
+
+    if(!box) return;
+
+    box.value += key;
+  };
+
+  window.backspaceKey = function(){
+
+    const box = document.getElementById('searchBox');
+
+    if(!box) return;
+
+    box.value = box.value.slice(0, -1);
+  };
+
+  window.searchDestination = function(){
+
+    const box = document.getElementById('searchBox');
+
+    if(!box) return;
+
+    const search = box.value.toLowerCase().trim();
+
+    const buttons = document.querySelectorAll('.destination');
+
+    let found = false;
+
+    buttons.forEach(button => {
+
+      const text = button.innerText.toLowerCase();
+
+      if(text.includes(search)){
+
+        button.style.display = 'block';
+        button.style.border = '3px solid #2563eb';
+        button.style.background = '#dbeafe';
+
+        if(!found){
+          button.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center'
+          });
+
+          button.click();
+          found = true;
+        }
+
+      } else {
+        button.style.display = 'none';
+      }
+    });
+
+    if(search === ''){
+      buttons.forEach(button => {
+        button.style.display = 'block';
+        button.style.border = '2px solid #dbe2ea';
+        button.style.background = 'white';
+      });
+      return;
+    }
+
+    if(!found){
+      alert('Destination not found');
+
+      buttons.forEach(button => {
+        button.style.display = 'block';
+      });
+    }
+  };
+
+  /* =========================
+     INITIALIZE
+  ========================= */
+
+  renderDestinations();
+
+  if(loader){
+    loader.style.display = 'none';
+  }
+
+});
+</script>
+
+</body>
+</html>
+```
+
+Source files used: HTML fileciteturn0file0 and CSS/JS assets fileciteturn0file1
