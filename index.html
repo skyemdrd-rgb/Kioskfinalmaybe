@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>MSC Kiosk Directory</title>
 
 <style>
@@ -21,6 +23,14 @@ html,body{
   background:#edf1f5;
 }
 
+#app{
+  position:absolute;
+  width:3840px;
+  height:2160px;
+  transform-origin:top left;
+  overflow:hidden;
+}
+
 #loader{
   position:fixed;
   inset:0;
@@ -29,16 +39,8 @@ html,body{
   display:flex;
   justify-content:center;
   align-items:center;
-  font-size:50px;
-  z-index:9999;
-}
-
-#app{
-  position:absolute;
-  width:3840px;
-  height:2160px;
-  transform-origin:top left;
-  overflow:hidden;
+  font-size:60px;
+  z-index:99999;
 }
 
 .screen{
@@ -80,16 +82,16 @@ body.debug .hotspot{
 }
 
 .guide{
-  left:38%;
-  width:25%;
-  height:23%;
+  left:38.3%;
+  width:25.32%;
+  height:23.67%;
   bottom:0;
 }
 
 .about{
-  left:64%;
-  width:24%;
-  height:23%;
+  left:64.2%;
+  width:24.32%;
+  height:23.67%;
   bottom:0;
 }
 
@@ -141,16 +143,16 @@ body.debug .hotspot{
 .sidebar{
   width:620px;
   background:white;
-  padding:20px;
   overflow-y:auto;
+  padding:24px;
 }
 
 .destination{
   background:white;
   border:2px solid #ddd;
-  padding:25px;
+  border-radius:28px;
+  padding:28px;
   margin-bottom:20px;
-  border-radius:24px;
   font-size:42px;
   font-weight:bold;
   cursor:pointer;
@@ -171,7 +173,7 @@ body.debug .hotspot{
   width:100%;
   height:100%;
   background:white;
-  border-radius:30px;
+  border-radius:32px;
   overflow:hidden;
   position:relative;
 }
@@ -184,13 +186,14 @@ body.debug .hotspot{
 
 .marker{
   position:absolute;
-  width:24px;
-  height:24px;
+  width:28px;
+  height:28px;
   background:red;
   border-radius:50%;
-  border:4px solid white;
+  border:5px solid white;
   transform:translate(-50%,-50%);
   display:none;
+  z-index:50;
 }
 
 .floor-sidebar{
@@ -207,9 +210,9 @@ body.debug .hotspot{
   width:140px;
   height:140px;
   border:none;
-  border-radius:30px;
+  border-radius:28px;
   background:white;
-  font-size:50px;
+  font-size:48px;
   font-weight:bold;
   color:#0d3b8f;
   cursor:pointer;
@@ -223,8 +226,8 @@ body.debug .hotspot{
   padding:20px;
   border-radius:40px;
   display:flex;
-  gap:20px;
   align-items:center;
+  gap:20px;
   z-index:10;
 }
 
@@ -232,8 +235,8 @@ body.debug .hotspot{
   border:none;
   background:#0d3b8f;
   color:white;
-  padding:15px 20px;
-  border-radius:20px;
+  padding:14px 20px;
+  border-radius:18px;
   font-size:20px;
   cursor:pointer;
 }
@@ -251,7 +254,7 @@ body.debug .hotspot{
 
 <div id="homeScreen" class="screen active">
 
-  <div class="background" style="background-image:url('home.png')"></div>
+  <div class="background" style="background-image:url('./home.png')"></div>
 
   <div class="hotspot home" onclick="goHome()"></div>
   <div class="hotspot guide" onclick="goGuide()"></div>
@@ -263,7 +266,7 @@ body.debug .hotspot{
 
 <div id="aboutScreen" class="screen">
 
-  <div class="background" style="background-image:url('about.jpg')"></div>
+  <div class="background" style="background-image:url('./about.jpg')"></div>
 
 </div>
 
@@ -271,7 +274,7 @@ body.debug .hotspot{
 
 <div id="guideScreen" class="screen">
 
-  <div class="background" style="background-image:url('guide.jpg')"></div>
+  <div class="background" style="background-image:url('./guide.jpg')"></div>
 
   <div class="hotspot clinic"></div>
   <div class="hotspot chaplain"></div>
@@ -293,23 +296,43 @@ body.debug .hotspot{
     <div class="map-area">
 
       <div class="top-bar">
-        <button class="switch-btn" onclick="goGuide()">Back</button>
-        <button class="switch-btn" onclick="switchMap()">Switch Building</button>
+
+        <button class="switch-btn" onclick="goGuide()">
+          Back
+        </button>
+
+        <button class="switch-btn" onclick="switchMap()">
+          Switch Building
+        </button>
+
       </div>
 
       <div class="map-container">
 
-        <img id="mapImage" src="msc-map.png">
+        <img id="mapImage" src="./msc-map.png">
 
         <div id="marker" class="marker"></div>
 
       </div>
 
       <div class="floor-sidebar">
-        <button class="floor-btn" onclick="changeFloor(1)">1F</button>
-        <button class="floor-btn" onclick="changeFloor(2)">2F</button>
-        <button class="floor-btn" onclick="changeFloor(3)">3F</button>
-        <button class="floor-btn" id="floor4" onclick="changeFloor(4)">4F</button>
+
+        <button class="floor-btn" onclick="changeFloor(1)">
+          1F
+        </button>
+
+        <button class="floor-btn" onclick="changeFloor(2)">
+          2F
+        </button>
+
+        <button class="floor-btn" onclick="changeFloor(3)">
+          3F
+        </button>
+
+        <button class="floor-btn" id="floor4" onclick="changeFloor(4)">
+          4F
+        </button>
+
       </div>
 
     </div>
@@ -378,28 +401,55 @@ const floors = {
   old:{
 
     1:{
-      image:'old-building-map.png',
+      image:'./old-building-map.png',
       destinations:[
+
         ['Dietary',34,31],
+        ['Purchasing Office',39,10],
         ['ER',14,74],
         ['OPD',22,87],
+        ['Chapel',39,69],
         ['Laboratory',42,49],
-        ['Pharmacy',49,76]
+        ['Drug Testing Lab',35,48],
+        ['Medical Social Service',18,60],
+        ['Medical Imaging',25,58],
+        ['Pharmacy',49,76],
+        ['Admin Office',34,88],
+        ['Business Office',47,88],
+        ['MIS',61,18],
+        ['HR Office',61,38],
+        ['Training Room',70,18],
+        ['Doctors Quarter',76,56],
+        ['Medical Record',58,66],
+        ['Photocopy',68,76],
+        ['Dorms',78,84],
+        ['MSC Entrance',74,6],
+        ['Kraft & Kettle',64,93]
+
       ]
     },
 
     2:{
-      image:'old-building-2nd-floor.png',
+      image:'./old-building-2nd-floor.png',
       destinations:[
+
         ['PICU',30,38],
-        ['ICU',63,30]
+        ['ICU',63,30],
+        ['OR',82,15],
+        ['Nurses Station',45,50],
+        ['Waiting Area',25,72]
+
       ]
     },
 
     3:{
-      image:'old-building-3rd-floor.png',
+      image:'./old-building-3rd-floor.png',
       destinations:[
-        ['Conference Room',30,45]
+
+        ['Conference Room',30,45],
+        ['Training Room',55,52],
+        ['Meeting Area',72,44]
+
       ]
     }
 
@@ -408,33 +458,53 @@ const floors = {
   new:{
 
     1:{
-      image:'msc-map.png',
+      image:'./msc-map.png',
       destinations:[
+
         ['Canteen',21,24],
         ['Eye Surgi Center',22,36],
         ['ACES',23,50],
-        ['Cancer Center',93,74]
+        ['Rehabilitation Center',43,36],
+        ['Hemodialysis Center',40,50],
+        ['Sleep Lab',30,76],
+        ['Cardiovascular Center',40,76],
+        ['Med Express',50,76],
+        ['Cashier Satellite',78,53],
+        ['Kraft & Kettle',80,53],
+        ['Cancer Center',93,74],
+        ['Wound Care Center',76,76],
+        ['PH Heart Office',84,76]
+
       ]
     },
 
     2:{
-      image:'msc-2nd-floor.png',
+      image:'./msc-2nd-floor.png',
       destinations:[
-        ['DR Clinics',15,42]
+
+        ['DR Clinics',15,42],
+        ['Elevator',64,45]
+
       ]
     },
 
     3:{
-      image:'msc-3rd-floor.png',
+      image:'./msc-3rd-floor.png',
       destinations:[
-        ['Executive Office',25,45]
+
+        ['Executive Office',25,45],
+        ['Board Room',60,55]
+
       ]
     },
 
     4:{
-      image:'msc-4th-floor.png',
+      image:'./msc-4th-floor.png',
       destinations:[
-        ['Roof Deck',20,45]
+
+        ['Roof Deck',20,45],
+        ['Executive Lounge',45,58]
+
       ]
     }
 
@@ -446,6 +516,8 @@ function renderDestinations(){
 
   const data = floors[currentMap][currentFloor];
 
+  if(!data) return;
+
   mapImage.src = data.image;
 
   destinations.innerHTML = '';
@@ -455,10 +527,15 @@ function renderDestinations(){
     const btn = document.createElement('div');
 
     btn.className = 'destination';
+
     btn.innerText = item[0];
 
     btn.onclick = ()=>{
-      showWaypoint(item[1], item[2]);
+
+      marker.style.display = 'block';
+
+      marker.style.left = item[1] + '%';
+      marker.style.top = item[2] + '%';
     };
 
     destinations.appendChild(btn);
@@ -467,18 +544,11 @@ function renderDestinations(){
 
 }
 
-function showWaypoint(x,y){
-
-  marker.style.display = 'block';
-  marker.style.left = x + '%';
-  marker.style.top = y + '%';
-}
-
 function changeFloor(floor){
 
   currentFloor = floor;
 
-  if(currentMap === 'old' && floor === 4){
+  if(currentMap === 'old' && currentFloor === 4){
     currentFloor = 1;
   }
 
