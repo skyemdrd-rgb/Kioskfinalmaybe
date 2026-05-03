@@ -638,33 +638,34 @@ document.addEventListener('DOMContentLoaded', function(){
         marker.style.display = 'none';
 
         renderMap();
-    };
 
-    window.switchMap = function(){
+/* HIDE LOADER SAFELY */
 
-        currentMap =
-            currentMap === 'new'
-            ? 'old'
-            : 'new';
+window.addEventListener('load', () => {
 
-        if(currentMap === 'old' && currentFloor === 4){
-            currentFloor = 1;
-        }
+    const loader = document.getElementById('loader');
 
-        marker.style.display = 'none';
-
-        renderMap();
-    };
-
-    renderMap();
-
-    /* HIDE LOADER */
-
-    setTimeout(()=>{
-        document.getElementById('loader').style.display = 'none';
-    },500);
+    if(loader){
+        loader.style.display = 'none';
+    }
 
 });
+
+/* FAILSAFE */
+
+setTimeout(() => {
+
+    const loader = document.getElementById('loader');
+
+    if(loader){
+        loader.style.display = 'none';
+    }
+
+}, 3000);
+
+});
+
+    /* HIDE LOADER */
 
 </script>
 
