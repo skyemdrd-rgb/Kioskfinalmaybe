@@ -112,7 +112,7 @@ body.debug .hotspot {
 }
 
 .sidebar {
-  width: 340px;
+  width: 620px;
   background: white;
   border-right: 2px solid #dbe2ea;
   display: flex;
@@ -144,54 +144,9 @@ body.debug .hotspot {
   flex: 1;
 }
 
-.search-box {
-  width: 100%;
-  padding: 16px;
-  border-radius: 18px;
-  border: 2px solid #dbe2ea;
-  margin-bottom: 20px;
-  font-size: 17px;
-}
 
-.keyboard {
-  display: none;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 30px;
-  width: 100%;
-  max-width: 100%;
-}
 
-.keyboard-row {
-  display: flex;
-  gap: 8px;
-  width: 100%;
-}
 
-.keyboard button {
-  flex: 1;
-  padding: 18px 12px;
-  border: none;
-  border-radius: 20px;
-  background: #0d3b8f;
-  color: white;
-  font-size: 20px;
-  font-weight: bold;
-  cursor: pointer;
-  min-height: 64px;
-}
-
-.keyboard button:active {
-  transform: scale(0.96);
-}
-
-.space-key {
-  flex: 4 !important;
-}
-
-.wide-key {
-  flex: 2 !important;
-}
 
 .destination {
   background: white;
@@ -427,51 +382,7 @@ body.debug .hotspot {
       </div>
 
       <div class="sidebar-content">
-        <input type="text" id="searchBox" class="search-box" placeholder="Search destination..." readonly onclick="toggleKeyboard(true)">
-
-        <div id="keyboard" class="keyboard">
-          <div class="keyboard-row">
-            <button onclick="pressKey('Q')">Q</button>
-            <button onclick="pressKey('W')">W</button>
-            <button onclick="pressKey('E')">E</button>
-            <button onclick="pressKey('R')">R</button>
-            <button onclick="pressKey('T')">T</button>
-            <button onclick="pressKey('Y')">Y</button>
-            <button onclick="pressKey('U')">U</button>
-            <button onclick="pressKey('I')">I</button>
-            <button onclick="pressKey('O')">O</button>
-            <button onclick="pressKey('P')">P</button>
-          </div>
-
-          <div class="keyboard-row">
-            <button onclick="pressKey('A')">A</button>
-            <button onclick="pressKey('S')">S</button>
-            <button onclick="pressKey('D')">D</button>
-            <button onclick="pressKey('F')">F</button>
-            <button onclick="pressKey('G')">G</button>
-            <button onclick="pressKey('H')">H</button>
-            <button onclick="pressKey('J')">J</button>
-            <button onclick="pressKey('K')">K</button>
-            <button onclick="pressKey('L')">L</button>
-          </div>
-
-          <div class="keyboard-row">
-            <button onclick="pressKey('Z')">Z</button>
-            <button onclick="pressKey('X')">X</button>
-            <button onclick="pressKey('C')">C</button>
-            <button onclick="pressKey('V')">V</button>
-            <button onclick="pressKey('B')">B</button>
-            <button onclick="pressKey('N')">N</button>
-            <button onclick="pressKey('M')">M</button>
-            <button class="wide-key" onclick="backspaceKey()">⌫</button>
-          </div>
-
-          <div class="keyboard-row">
-            <button class="space-key" onclick="pressKey(' ')">SPACE</button>
-            <button class="wide-key" onclick="searchDestination()">SEARCH</button>
-            <button class="wide-key" onclick="toggleKeyboard(false)">CLOSE</button>
-          </div>
-        </div>
+        <div id="destinations">
 
         <div id="destinations">
           <div class="destination" onclick="showWaypoint(31,33)">Dietary</div>
@@ -615,25 +526,25 @@ window.addEventListener('load', () => {
         destinations: [
           ['Dietary',34,31],
           ['Purchasing Office',39,10],
-          ['ER',22,75],
-          ['OPD',32,80],
-          ['Chapel',42,69],
-          ['Laboratory',45,49],
-          ['Drug Testing Lab',39,48],
-          ['Medical Social Service',28.5,60],
-          ['Medical Imaging',33,58],
-          ['Pharmacy',53,76],
-          ['Admin Office',37,86],
-          ['Business Office',50,84],
+          ['ER',14,74],
+          ['OPD',22,87],
+          ['Chapel',39,69],
+          ['Laboratory',42,49],
+          ['Drug Testing Lab',35,48],
+          ['Medical Social Service',18,60],
+          ['Medical Imaging',25,58],
+          ['Pharmacy',49,76],
+          ['Admin Office',34,88],
+          ['Business Office',47,88],
           ['MIS',61,18],
           ['HR Office',61,38],
           ['Training Room',70,18],
           ['Doctors Quarter',76,56],
-          ['Medical Record',64,66],
-          ['Photocopy',72,66],
-          ['Dorms',78,80],
+          ['Medical Record',58,66],
+          ['Photocopy',68,76],
+          ['Dorms',78,84],
           ['MSC Entrance',74,6],
-          ['Kraft & Kettle',67,87]
+          ['Kraft & Kettle',64,93]
         ]
       },
 
@@ -756,87 +667,7 @@ window.addEventListener('load', () => {
      TOUCH KEYBOARD
   ========================= */
 
-  window.toggleKeyboard = function(show){
-
-    const keyboard = document.getElementById('keyboard');
-
-    if(!keyboard) return;
-
-    keyboard.style.display = show ? 'flex' : 'none';
-  };
-
-  window.pressKey = function(key){
-
-    const box = document.getElementById('searchBox');
-
-    if(!box) return;
-
-    box.value += key;
-  };
-
-  window.backspaceKey = function(){
-
-    const box = document.getElementById('searchBox');
-
-    if(!box) return;
-
-    box.value = box.value.slice(0, -1);
-  };
-
-  window.searchDestination = function(){
-
-    const box = document.getElementById('searchBox');
-
-    if(!box) return;
-
-    const search = box.value.toLowerCase().trim();
-
-    const buttons = document.querySelectorAll('.destination');
-
-    let found = false;
-
-    buttons.forEach(button => {
-
-      const text = button.innerText.toLowerCase();
-
-      if(text.includes(search)){
-
-        button.style.display = 'block';
-        button.style.border = '3px solid #2563eb';
-        button.style.background = '#dbeafe';
-
-        if(!found){
-          button.scrollIntoView({
-            behavior: 'smooth',
-            block: 'center'
-          });
-
-          button.click();
-          found = true;
-        }
-
-      } else {
-        button.style.display = 'none';
-      }
-    });
-
-    if(search === ''){
-      buttons.forEach(button => {
-        button.style.display = 'block';
-        button.style.border = '2px solid #dbe2ea';
-        button.style.background = 'white';
-      });
-      return;
-    }
-
-    if(!found){
-      alert('Destination not found');
-
-      buttons.forEach(button => {
-        button.style.display = 'block';
-      });
-    }
-  };
+  
 
   /* =========================
      INITIALIZE
