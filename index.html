@@ -437,28 +437,46 @@ window.addEventListener('load', ()=>{
   const loader = document.getElementById('loader');
   const screens = document.querySelectorAll('.screen');
 
+  /* =========================
+     4K RESPONSIVE SCALE
+  ========================= */
+
   function scaleApp(){
 
     const baseWidth = 3840;
     const baseHeight = 2160;
 
-    const scaleX = window.innerWidth / baseWidth;
-    const scaleY = window.innerHeight / baseHeight;
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+
+    const scaleX = windowWidth / baseWidth;
+    const scaleY = windowHeight / baseHeight;
 
     const scale = Math.min(scaleX, scaleY);
 
+    app.style.width = baseWidth + 'px';
+    app.style.height = baseHeight + 'px';
+
     app.style.transform = `scale(${scale})`;
+    app.style.transformOrigin = 'top left';
+
+    const scaledWidth = baseWidth * scale;
+    const scaledHeight = baseHeight * scale;
 
     app.style.left =
-      ((window.innerWidth - (baseWidth * scale)) / 2) + 'px';
+      ((windowWidth - scaledWidth) / 2) + 'px';
 
     app.style.top =
-      ((window.innerHeight - (baseHeight * scale)) / 2) + 'px';
+      ((windowHeight - scaledHeight) / 2) + 'px';
   }
 
   scaleApp();
 
   window.addEventListener('resize', scaleApp);
+
+  /* =========================
+     SCREEN NAVIGATION
+  ========================= */
 
   window.showScreen = function(id){
 
@@ -481,6 +499,10 @@ window.addEventListener('load', ()=>{
     showScreen('guideScreen');
   };
 
+  /* =========================
+     MAP SYSTEM
+  ========================= */
+
   const mapImage = document.getElementById('mapImage');
   const marker = document.getElementById('marker');
   const destinations = document.getElementById('destinations');
@@ -492,66 +514,67 @@ window.addEventListener('load', ()=>{
 
     old: {
 
-  1: {
-    image: 'old-building-map.png',
-    destinations: [
+      1: {
+        image: 'old-building-map.png',
+        destinations: [
 
-      ['Dietary',34,31],
-      ['Purchasing Office',39,10],
-      ['ER',14,74],
-      ['OPD',22,87],
-      ['Chapel',39,69],
-      ['Laboratory',42,49],
-      ['Drug Testing Lab',35,48],
-      ['Medical Social Service',18,60],
-      ['Medical Imaging',25,58],
-      ['Pharmacy',49,76],
-      ['Admin Office',34,88],
-      ['Business Office',47,88],
-      ['MIS',61,18],
-      ['HR Office',61,38],
-      ['Training Room',70,18],
-      ['Doctors Quarter',76,56],
-      ['Medical Record',58,66],
-      ['Photocopy',68,76],
-      ['Dorms',78,84],
-      ['MSC Entrance',74,6],
-      ['Kraft & Kettle',64,93]
+          ['Dietary',34,31],
+          ['Purchasing Office',39,10],
+          ['ER',14,74],
+          ['OPD',22,87],
+          ['Chapel',39,69],
+          ['Laboratory',42,49],
+          ['Drug Testing Lab',35,48],
+          ['Medical Social Service',18,60],
+          ['Medical Imaging',25,58],
+          ['Pharmacy',49,76],
+          ['Admin Office',34,88],
+          ['Business Office',47,88],
+          ['MIS',61,18],
+          ['HR Office',61,38],
+          ['Training Room',70,18],
+          ['Doctors Quarter',76,56],
+          ['Medical Record',58,66],
+          ['Photocopy',68,76],
+          ['Dorms',78,84],
+          ['MSC Entrance',74,6],
+          ['Kraft & Kettle',64,93]
 
-    ]
-  },
+        ]
+      },
 
-  2: {
-    image: 'old-building-2nd-floor.png',
-    destinations: [
+      2: {
+        image: 'old-building-2nd-floor.png',
+        destinations: [
 
-      ['PICU',30,38],
-      ['ICU',63,30],
-      ['OR',82,15],
-      ['Nurses Station',45,50],
-      ['Waiting Area',25,72]
+          ['PICU',30,38],
+          ['ICU',63,30],
+          ['OR',82,15],
+          ['Nurses Station',45,50],
+          ['Waiting Area',25,72]
 
-    ]
-  },
+        ]
+      },
 
-  3: {
-    image: 'old-building-3rd-floor.png',
-    destinations: [
+      3: {
+        image: 'old-building-3rd-floor.png',
+        destinations: [
 
-      ['Conference Room',30,45],
-      ['Training Room',55,52],
-      ['Meeting Area',72,44]
+          ['Conference Room',30,45],
+          ['Training Room',55,52],
+          ['Meeting Area',72,44]
 
-    ]
-  }
+        ]
+      }
 
-},
+    },
 
     new: {
 
       1:{
         image:'msc-map.png',
         destinations:[
+
           ['Canteen',21,24],
           ['Eye Surgi Center',22,36],
           ['ACES',23,50],
@@ -566,6 +589,7 @@ window.addEventListener('load', ()=>{
           ['Cancer Center',93,74],
           ['Wound Care Center',76,76],
           ['PH Heart Office',84,76]
+
         ]
       },
 
@@ -627,6 +651,7 @@ window.addEventListener('load', ()=>{
   window.showWaypoint = function(x,y){
 
     marker.style.display = 'block';
+
     marker.style.left = x + '%';
     marker.style.top = y + '%';
   };
