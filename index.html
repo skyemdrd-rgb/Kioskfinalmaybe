@@ -1,346 +1,331 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MSC Kiosk Directory</title>
 
 <style>
 
 *{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:Arial, sans-serif;
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Arial, Helvetica, sans-serif;
 }
 
 html,body{
-    width:100%;
-    height:100%;
-    overflow:hidden;
-    background:#edf1f5;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#edf1f5;
 }
 
 #app{
-    position:fixed;
-    left:0;
-    top:0;
-    width:3840px;
-    height:2160px;
-    transform-origin:top left;
-    overflow:hidden;
+  position:absolute;
+  width:3840px;
+  height:2160px;
+  transform-origin:top left;
+  overflow:hidden;
 }
-
-/* LOADER */
 
 #loader{
-    position:fixed;
-    inset:0;
-    background:black;
-    color:white;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    font-size:60px;
-    z-index:99999;
+  position:fixed;
+  inset:0;
+  background:black;
+  color:white;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-size:60px;
+  z-index:99999;
 }
 
-/* SCREEN */
-
 .screen{
-    position:absolute;
-    inset:0;
-    opacity:0;
-    pointer-events:none;
-    transition:0.25s;
+  position:absolute;
+  inset:0;
+  opacity:0;
+  pointer-events:none;
+  transition:.3s;
 }
 
 .screen.active{
-    opacity:1;
-    pointer-events:auto;
+  opacity:1;
+  pointer-events:auto;
 }
-
-/* BACKGROUND */
 
 .background,
 .video-bg{
-    position:absolute;
-    inset:0;
-    width:100%;
-    height:100%;
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
 }
 
 .background{
-    background-size:cover;
-    background-position:center;
+  background-size:cover;
+  background-position:center;
 }
 
 .video-bg{
-    object-fit:cover;
+  object-fit:cover;
+}
+
+.hotspot{
+  position:absolute;
+  z-index:10;
+  cursor:pointer;
+}
+
+body.debug .hotspot{
+  background:rgba(255,0,0,.15);
+  border:2px dashed red;
 }
 
 /* HOTSPOTS */
 
-.hotspot{
-    position:absolute;
-    z-index:10;
-    cursor:pointer;
-}
-
-/* DEBUG */
-
-body.debug .hotspot{
-    background:rgba(255,0,0,0.15);
-    border:2px dashed red;
-}
-
-/* HOME BUTTONS */
-
 .startHotspot{
-    inset:0;
+  width:100%;
+  height:100%;
+  top:0;
+  left:0;
 }
 
 .home{
-    left:14%;
-    width:21.67%;
-    height:23.67%;
-    bottom:0;
+  left:14%;
+  width:21.67%;
+  height:23.67%;
+  bottom:0;
 }
 
 .guide{
-    left:38.3%;
-    width:25.32%;
-    height:23.67%;
-    bottom:0;
+  left:38.3%;
+  width:25.32%;
+  height:23.67%;
+  bottom:0;
 }
 
 .about{
-    left:64.2%;
-    width:24.32%;
-    height:23.67%;
-    bottom:0;
+  left:64.2%;
+  width:24.32%;
+  height:23.67%;
+  bottom:0;
 }
 
-/* GUIDE BUTTONS */
-
 .clinic{
-    top:4%;
-    left:6%;
-    width:31%;
-    height:22%;
+  top:4%;
+  left:6%;
+  width:31%;
+  height:22%;
 }
 
 .chaplain{
-    top:4%;
-    left:42%;
-    width:30%;
-    height:22%;
+  top:4%;
+  left:42%;
+  width:30%;
+  height:22%;
 }
 
 .resto{
-    top:32%;
-    left:40.5%;
-    width:32%;
-    height:18%;
+  top:32%;
+  left:40.5%;
+  width:32%;
+  height:18%;
 }
 
 .dept{
-    top:54.7%;
-    left:6%;
-    width:31.5%;
-    height:21.2%;
+  top:54.7%;
+  left:6%;
+  width:31.5%;
+  height:21.2%;
 }
 
 .mapBtn{
-    bottom:3%;
-    left:5%;
-    width:67%;
-    height:18%;
+  bottom:3%;
+  left:5%;
+  width:67%;
+  height:18%;
 }
 
 .aboutSide{
-    top:6%;
-    right:0;
-    width:11.5%;
-    height:28.33%;
+  top:6%;
+  right:0%;
+  width:11.5%;
+  height:28.33%;
 }
 
 .guideSide{
-    top:36%;
-    right:0;
-    width:11.5%;
-    height:28.33%;
+  top:36%;
+  right:0%;
+  width:11.5%;
+  height:28.33%;
 }
 
 .homeSide{
-    top:65.66%;
-    right:0;
-    width:11.5%;
-    height:28.33%;
+  top:65.66%;
+  right:0%;
+  width:11.5%;
+  height:28.33%;
 }
 
 .backHome{
-    bottom:7%;
-    right:0;
-    width:10.5%;
-    height:16%;
+  bottom:7%;
+  right:0%;
+  width:10.5%;
+  height:16%;
 }
 
 /* MAP */
 
 .container{
-    width:100%;
-    height:100%;
-    display:flex;
+  width:100%;
+  height:100%;
+  display:flex;
 }
 
 .sidebar{
-    width:620px;
-    background:white;
-    border-right:2px solid #dbe2ea;
-    display:flex;
-    flex-direction:column;
+  width:620px;
+  background:white;
+  border-right:2px solid #dbe2ea;
+  display:flex;
+  flex-direction:column;
 }
 
 .header{
-    background:#0d3b8f;
-    color:white;
-    padding:35px;
+  background:#0d3b8f;
+  color:white;
+  padding:35px;
 }
 
 .header h1{
-    font-size:38px;
+  font-size:38px;
 }
 
 .header p{
-    margin-top:10px;
+  margin-top:10px;
+  color:#d7e5ff;
 }
 
 .sidebar-content{
-    flex:1;
-    overflow-y:auto;
-    padding:24px;
+  padding:24px;
+  overflow-y:auto;
+  flex:1;
 }
 
 .destination{
-    background:white;
-    border:2px solid #dbe2ea;
-    border-radius:30px;
-    padding:28px;
-    margin-bottom:22px;
-    font-size:46px;
-    font-weight:bold;
-    cursor:pointer;
-    transition:0.2s;
+  background:white;
+  border:2px solid #dbe2ea;
+  padding:32px;
+  border-radius:32px;
+  margin-bottom:24px;
+  cursor:pointer;
+  font-weight:bold;
+  font-size:48px;
+  transition:.2s;
 }
 
 .destination:hover{
-    background:#0d3b8f;
-    color:white;
+  background:#0d3b8f;
+  color:white;
 }
 
 .map-area{
-    flex:1;
-    position:relative;
-    padding:40px;
+  flex:1;
+  position:relative;
+  padding:42px;
 }
 
 .top-bar{
-    position:absolute;
-    top:35px;
-    right:35px;
-    z-index:30;
-    background:white;
-    border-radius:50px;
-    padding:18px 25px;
-    display:flex;
-    align-items:center;
-    gap:20px;
-    box-shadow:0 5px 20px rgba(0,0,0,0.1);
-    font-size:24px;
-    font-weight:bold;
+  position:absolute;
+  top:34px;
+  right:34px;
+  background:white;
+  padding:18px 26px;
+  border-radius:48px;
+  display:flex;
+  align-items:center;
+  gap:20px;
+  z-index:20;
+  font-size:24px;
+  font-weight:bold;
+  box-shadow:0 5px 20px rgba(0,0,0,0.1);
 }
 
 .switch-btn{
-    border:none;
-    background:#0d3b8f;
-    color:white;
-    border-radius:30px;
-    padding:16px 24px;
-    cursor:pointer;
-    font-size:20px;
-    font-weight:bold;
+  border:none;
+  background:#0d3b8f;
+  color:white;
+  padding:16px 24px;
+  border-radius:32px;
+  font-size:20px;
+  font-weight:bold;
+  cursor:pointer;
 }
 
 .map-container{
-    width:100%;
-    height:100%;
-    background:white;
-    border-radius:40px;
-    overflow:hidden;
-    position:relative;
-    padding:20px;
+  width:100%;
+  height:100%;
+  background:white;
+  border-radius:38px;
+  overflow:hidden;
+  position:relative;
+  padding:18px;
 }
 
 .map-container img{
-    width:100%;
-    height:100%;
-    object-fit:contain;
+  width:100%;
+  height:100%;
+  object-fit:contain;
 }
 
-/* FLOOR */
-
 .floor-sidebar{
-    position:absolute;
-    right:50px;
-    top:50%;
-    transform:translateY(-50%);
-    display:flex;
-    flex-direction:column;
-    gap:20px;
-    z-index:50;
+  position:absolute;
+  right:48px;
+  top:50%;
+  transform:translateY(-50%);
+  display:flex;
+  flex-direction:column;
+  gap:20px;
+  z-index:30;
 }
 
 .floor-btn{
-    width:150px;
-    height:150px;
-    border:none;
-    border-radius:30px;
-    background:white;
-    color:#0d3b8f;
-    font-size:52px;
-    font-weight:900;
-    cursor:pointer;
-    box-shadow:0 5px 15px rgba(0,0,0,0.12);
+  width:150px;
+  height:150px;
+  border:none;
+  border-radius:32px;
+  background:rgba(255,255,255,0.96);
+  color:#0d3b8f;
+  font-size:52px;
+  font-weight:800;
+  cursor:pointer;
+  box-shadow:0 5px 15px rgba(0,0,0,0.12);
 }
 
-/* MARKER */
-
 .marker{
-    position:absolute;
-    width:28px;
-    height:28px;
-    background:red;
-    border-radius:50%;
-    border:5px solid white;
-    transform:translate(-50%,-50%);
-    box-shadow:0 0 0 12px rgba(255,0,0,0.25);
-    z-index:100;
-    display:none;
-    animation:pulse 2s infinite;
+  position:absolute;
+  width:26px;
+  height:26px;
+  background:red;
+  border-radius:50%;
+  border:5px solid white;
+  transform:translate(-50%,-50%);
+  box-shadow:0 0 0 12px rgba(255,0,0,0.25);
+  display:none;
+  z-index:50;
+  animation:pulse 2s infinite;
 }
 
 @keyframes pulse{
-    0%{transform:translate(-50%,-50%) scale(1);}
-    50%{transform:translate(-50%,-50%) scale(1.2);}
-    100%{transform:translate(-50%,-50%) scale(1);}
+  0%{ transform:translate(-50%,-50%) scale(1); }
+  50%{ transform:translate(-50%,-50%) scale(1.2); }
+  100%{ transform:translate(-50%,-50%) scale(1); }
 }
 
 </style>
 </head>
 
-<body>
+<body class="debug">
 
 <div id="loader">Loading...</div>
 
@@ -349,31 +334,22 @@ body.debug .hotspot{
 <!-- START -->
 
 <div id="startScreen" class="screen active">
+  <video class="video-bg" autoplay muted loop playsinline>
+    <source src="idle.mp4" type="video/mp4">
+  </video>
 
-    <video 
-    class="video-bg"
-    autoplay
-    muted
-    loop
-    playsinline
-    preload="metadata"
->
-    <source src="./idle.mp4" type="video/mp4">
-</video>
-
-    <div class="hotspot startHotspot" onclick="goHome()"></div>
-
+  <div class="hotspot startHotspot" onclick="goHome()"></div>
 </div>
 
 <!-- HOME -->
 
 <div id="homeScreen" class="screen">
 
-    <div class="background" style="background-image:url('home.png')"></div>
+  <div class="background" style="background-image:url('home.png')"></div>
 
-    <div class="hotspot home" onclick="goHome()"></div>
-    <div class="hotspot guide" onclick="goGuide()"></div>
-    <div class="hotspot about" onclick="showScreen('aboutScreen')"></div>
+  <div class="hotspot home" onclick="goHome()"></div>
+  <div class="hotspot guide" onclick="goGuide()"></div>
+  <div class="hotspot about" onclick="showScreen('aboutScreen')"></div>
 
 </div>
 
@@ -381,9 +357,9 @@ body.debug .hotspot{
 
 <div id="aboutScreen" class="screen">
 
-    <div class="background" style="background-image:url('about.jpg')"></div>
+  <div class="background" style="background-image:url('about.jpg')"></div>
 
-    <div class="hotspot backHome" onclick="goHome()"></div>
+  <div class="hotspot backHome" onclick="goHome()"></div>
 
 </div>
 
@@ -391,18 +367,48 @@ body.debug .hotspot{
 
 <div id="guideScreen" class="screen">
 
-    <div class="background" style="background-image:url('guide.jpg')"></div>
+  <div class="background" style="background-image:url('guide.jpg')"></div>
 
-    <div class="hotspot clinic"></div>
-    <div class="hotspot chaplain"></div>
-    <div class="hotspot resto"></div>
-    <div class="hotspot dept"></div>
+  <div class="hotspot clinic" onclick="showScreen('hmo1')"></div>
+  <div class="hotspot chaplain" onclick="showScreen('chaplainScreen')"></div>
+  <div class="hotspot resto" onclick="showScreen('restaurantScreen')"></div>
+  <div class="hotspot dept" onclick="showScreen('departmentScreen')"></div>
+  <div class="hotspot mapBtn" onclick="showScreen('mapScreen')"></div>
 
-    <div class="hotspot mapBtn" onclick="showScreen('mapScreen')"></div>
+  <div class="hotspot aboutSide" onclick="showScreen('aboutScreen')"></div>
+  <div class="hotspot guideSide" onclick="goGuide()"></div>
+  <div class="hotspot homeSide" onclick="goHome()"></div>
 
-    <div class="hotspot aboutSide" onclick="showScreen('aboutScreen')"></div>
-    <div class="hotspot guideSide" onclick="goGuide()"></div>
-    <div class="hotspot homeSide" onclick="goHome()"></div>
+</div>
+
+<!-- DEPARTMENT SCREEN -->
+
+<div id="departmentScreen" class="screen">
+
+  <div class="background"
+       style="background-image:url('department.jpg')">
+  </div>
+
+  <div class="hotspot backHome"
+       onclick="goGuide()">
+  </div>
+
+</div>
+
+<!-- RESTAURANT SCREEN -->
+
+<div id="restaurantScreen" class="screen">
+
+  <div class="background"
+       style="background-image:url('restaurant.jpg')">
+  </div>
+
+  <div class="hotspot backHome"
+       onclick="goGuide()">
+  </div>
+
+</div>
+
 
 </div>
 
@@ -410,55 +416,45 @@ body.debug .hotspot{
 
 <div id="mapScreen" class="screen">
 
-<div class="container">
+  <div class="container">
 
     <aside class="sidebar">
 
-        <div class="header">
-            <h1>Hospital Directory</h1>
-            <p>Interactive Kiosk Navigation</p>
-        </div>
+      <div class="header">
+        <h1>Hospital Directory</h1>
+        <p>Interactive Kiosk Navigation</p>
+      </div>
 
-        <div class="sidebar-content" id="destinations"></div>
+      <div class="sidebar-content" id="destinations"></div>
 
     </aside>
 
     <main class="map-area">
 
-        <div class="top-bar">
+      <div class="top-bar">
+        <button class="switch-btn" onclick="goGuide()">Back</button>
+        Touch a destination
+        <button class="switch-btn" onclick="switchMap()">Switch Building</button>
+      </div>
 
-            <button class="switch-btn" onclick="goGuide()">
-                Back
-            </button>
+      <div class="map-container">
 
-            Touch a destination
+        <img id="mapImage" src="msc-map.png">
 
-            <button class="switch-btn" onclick="switchMap()">
-                Switch Building
-            </button>
+        <div id="marker" class="marker"></div>
 
-        </div>
+      </div>
 
-        <div class="map-container">
-
-            <img id="mapImage" src="msc-map.png" alt="Map">
-
-            <div id="marker" class="marker"></div>
-
-        </div>
-
-        <div class="floor-sidebar">
-
-            <button class="floor-btn" onclick="changeFloor(1)">1F</button>
-            <button class="floor-btn" onclick="changeFloor(2)">2F</button>
-            <button class="floor-btn" onclick="changeFloor(3)">3F</button>
-            <button class="floor-btn" id="floor4" onclick="changeFloor(4)">4F</button>
-
-        </div>
+      <div class="floor-sidebar">
+        <button class="floor-btn" onclick="changeFloor(1)">1F</button>
+        <button class="floor-btn" onclick="changeFloor(2)">2F</button>
+        <button class="floor-btn" onclick="changeFloor(3)">3F</button>
+        <button class="floor-btn" id="floor4" onclick="changeFloor(4)">4F</button>
+      </div>
 
     </main>
 
-</div>
+  </div>
 
 </div>
 
@@ -466,206 +462,270 @@ body.debug .hotspot{
 
 <script>
 
-document.addEventListener('DOMContentLoaded', function(){
+window.addEventListener('load', ()=>{
 
-    /* SCALE */
+  const app = document.getElementById('app');
+  const loader = document.getElementById('loader');
+  const screens = document.querySelectorAll('.screen');
 
-    const app = document.getElementById('app');
+  /* =========================
+     4K RESPONSIVE SCALE
+  ========================= */
 
-    function scaleApp(){
+  function scaleApp(){
 
-        const baseWidth = 3840;
-        const baseHeight = 2160;
+    const baseWidth = 3840;
+    const baseHeight = 2160;
 
-        const scale = Math.min(
-            window.innerWidth / baseWidth,
-            window.innerHeight / baseHeight
-        );
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
 
-        app.style.transform = `scale(${scale})`;
+    const scaleX = windowWidth / baseWidth;
+    const scaleY = windowHeight / baseHeight;
 
-        app.style.left =
-            ((window.innerWidth - (baseWidth * scale)) / 2) + 'px';
+    const scale = Math.min(scaleX, scaleY);
 
-        app.style.top =
-            ((window.innerHeight - (baseHeight * scale)) / 2) + 'px';
+    app.style.width = baseWidth + 'px';
+    app.style.height = baseHeight + 'px';
+
+    app.style.transform = `scale(${scale})`;
+    app.style.transformOrigin = 'top left';
+
+    const scaledWidth = baseWidth * scale;
+    const scaledHeight = baseHeight * scale;
+
+    app.style.left =
+      ((windowWidth - scaledWidth) / 2) + 'px';
+
+    app.style.top =
+      ((windowHeight - scaledHeight) / 2) + 'px';
+  }
+
+  scaleApp();
+
+  window.addEventListener('resize', scaleApp);
+
+  /* =========================
+     SCREEN NAVIGATION
+  ========================= */
+
+  window.showScreen = function(id){
+
+    screens.forEach(screen=>{
+      screen.classList.remove('active');
+    });
+
+    const target = document.getElementById(id);
+
+    if(target){
+      target.classList.add('active');
+    }
+  };
+
+  window.goHome = function(){
+    showScreen('homeScreen');
+  };
+
+  window.goGuide = function(){
+    showScreen('guideScreen');
+  };
+
+  /* =========================
+     MAP SYSTEM
+  ========================= */
+
+  const mapImage = document.getElementById('mapImage');
+  const marker = document.getElementById('marker');
+  const destinations = document.getElementById('destinations');
+
+  let currentMap = 'new';
+  let currentFloor = 1;
+
+  const floors = {
+
+    old: {
+
+      1: {
+        image: 'old-building-map.png',
+        destinations: [
+
+          ['Dietary',34,31],
+          ['Purchasing Office',39,10],
+          ['ER',14,74],
+          ['OPD',22,87],
+          ['Chapel',39,69],
+          ['Laboratory',42,49],
+          ['Drug Testing Lab',35,48],
+          ['Medical Social Service',18,60],
+          ['Medical Imaging',25,58],
+          ['Pharmacy',49,76],
+          ['Admin Office',34,88],
+          ['Business Office',47,88],
+          ['MIS',61,18],
+          ['HR Office',61,38],
+          ['Training Room',70,18],
+          ['Doctors Quarter',76,56],
+          ['Medical Record',58,66],
+          ['Photocopy',68,76],
+          ['Dorms',78,84],
+          ['MSC Entrance',74,6],
+          ['Kraft & Kettle',64,93]
+
+        ]
+      },
+
+      2: {
+        image: 'old-building-2nd-floor.png',
+        destinations: [
+
+          ['PICU',30,38],
+          ['ICU',63,30],
+          ['OR',82,15],
+          ['Nurses Station',45,50],
+          ['Waiting Area',25,72]
+
+        ]
+      },
+
+      3: {
+        image: 'old-building-3rd-floor.png',
+        destinations: [
+
+          ['Conference Room',30,45],
+          ['Training Room',55,52],
+          ['Meeting Area',72,44]
+
+        ]
+      }
+
+    },
+
+    new: {
+
+      1:{
+        image:'msc-map.png',
+        destinations:[
+
+          ['Canteen',21,24],
+          ['Eye Surgi Center',22,36],
+          ['ACES',23,50],
+          ['Rehabilitation Center',43,36],
+          ['Hemodialysis Center',40,50],
+          ['Elevator',61,61],
+          ['Sleep Lab',30,76],
+          ['Cardiovascular Center',40,76],
+          ['Med Express',50,76],
+          ['Cashier Satellite',78,53],
+          ['Kraft & Kettle',80,53],
+          ['Cancer Center',93,74],
+          ['Wound Care Center',76,76],
+          ['PH Heart Office',84,76]
+
+        ]
+      },
+
+      2:{
+        image:'msc-2nd-floor.png',
+        destinations:[
+          ['DR Clinics',15,42],
+          ['Elevator',64,45]
+        ]
+      },
+
+      3:{
+        image:'msc-3rd-floor.png',
+        destinations:[
+          ['Executive Office',25,45],
+          ['Board Room',60,55]
+        ]
+      },
+
+      4:{
+        image:'msc-4th-floor.png',
+        destinations:[
+          ['Roof Deck',20,45],
+          ['Executive Lounge',45,58]
+        ]
+      }
+
     }
 
-    scaleApp();
+  };
 
-    window.addEventListener('resize', scaleApp);
+  function renderDestinations(){
 
-    /* SCREENS */
+    const data = floors[currentMap][currentFloor];
 
-    const screens = document.querySelectorAll('.screen');
+    if(!data) return;
 
-    window.showScreen = function(id){
+    mapImage.src = data.image;
 
-        screens.forEach(screen=>{
-            screen.classList.remove('active');
-        });
+    destinations.innerHTML = '';
 
-        const target = document.getElementById(id);
+    data.destinations.forEach(item=>{
 
-        if(target){
-            target.classList.add('active');
-        }
-    };
+      const button = document.createElement('div');
 
-    window.goHome = function(){
-        showScreen('homeScreen');
-    };
+      button.className = 'destination';
 
-    window.goGuide = function(){
-        showScreen('guideScreen');
-    };
+      button.innerText = item[0];
 
-    /* MAP SYSTEM */
+      button.onclick = ()=>{
+        showWaypoint(item[1], item[2]);
+      };
 
-    const mapImage = document.getElementById('mapImage');
-    const marker = document.getElementById('marker');
-    const destinations = document.getElementById('destinations');
+      destinations.appendChild(button);
+
+    });
+  }
+
+  window.showWaypoint = function(x,y){
+
+    marker.style.display = 'block';
+
+    marker.style.left = x + '%';
+    marker.style.top = y + '%';
+  };
+
+  window.changeFloor = function(floor){
+
+    currentFloor = floor;
+
+    if(currentMap === 'old' && floor === 4){
+      currentFloor = 1;
+    }
+
     const floor4Btn = document.getElementById('floor4');
 
-    let currentMap = 'new';
-    let currentFloor = 1;
+    floor4Btn.style.display =
+      currentMap === 'new'
+      ? 'block'
+      : 'none';
 
-    const maps = {
+    marker.style.display = 'none';
 
-        new:{
-            1:{
-                image:'msc-map.png',
-                destinations:[
-                    ['Canteen',21,24],
-                    ['ACES',23,50],
-                    ['Rehabilitation Center',43,36],
-                    ['Cancer Center',93,74]
-                ]
-            },
+    renderDestinations();
+  };
 
-            2:{
-                image:'msc-2nd-floor.png',
-                destinations:[
-                    ['DR Clinics',15,42]
-                ]
-            },
+  window.switchMap = function(){
 
-            3:{
-                image:'msc-3rd-floor.png',
-                destinations:[
-                    ['Executive Office',25,45]
-                ]
-            },
+    currentMap =
+      currentMap === 'old'
+      ? 'new'
+      : 'old';
 
-            4:{
-                image:'msc-4th-floor.png',
-                destinations:[
-                    ['Roof Deck',20,45]
-                ]
-            }
-        },
-
-        old:{
-            1:{
-                image:'old-building-map.png',
-                destinations:[
-                    ['ER',14,74],
-                    ['OPD',22,87],
-                    ['Laboratory',42,49]
-                ]
-            },
-
-            2:{
-                image:'old-building-2nd-floor.png',
-                destinations:[
-                    ['ICU',63,30]
-                ]
-            },
-
-            3:{
-                image:'old-building-3rd-floor.png',
-                destinations:[
-                    ['Conference Room',30,45]
-                ]
-            }
-        }
-
-    };
-
-    function renderMap(){
-
-        const data = maps[currentMap][currentFloor];
-
-        if(!data) return;
-
-        mapImage.src = data.image;
-
-        destinations.innerHTML = '';
-
-        data.destinations.forEach(item=>{
-
-            const button = document.createElement('div');
-
-            button.className = 'destination';
-
-            button.innerText = item[0];
-
-            button.onclick = function(){
-
-                marker.style.display = 'block';
-
-                marker.style.left = item[1] + '%';
-                marker.style.top = item[2] + '%';
-            };
-
-            destinations.appendChild(button);
-        });
-
-        floor4Btn.style.display =
-            currentMap === 'new'
-            ? 'block'
-            : 'none';
+    if(currentMap === 'old' && currentFloor === 4){
+      currentFloor = 1;
     }
 
-    window.changeFloor = function(floor){
+    changeFloor(currentFloor);
+  };
 
-        if(currentMap === 'old' && floor === 4){
-            return;
-        }
+  renderDestinations();
 
-        currentFloor = floor;
-
-        marker.style.display = 'none';
-
-        renderMap();
-
-/* HIDE LOADER SAFELY */
-
-window.addEventListener('load', () => {
-
-    const loader = document.getElementById('loader');
-
-    if(loader){
-        loader.style.display = 'none';
-    }
+  loader.style.display = 'none';
 
 });
-
-/* FAILSAFE */
-
-setTimeout(() => {
-
-    const loader = document.getElementById('loader');
-
-    if(loader){
-        loader.style.display = 'none';
-    }
-
-}, 3000);
-
-});
-
-    /* HIDE LOADER */
 
 </script>
 
